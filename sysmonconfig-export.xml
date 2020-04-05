@@ -409,11 +409,16 @@
 		<ImageLoad onmatch="include">
 		</ImageLoad>
 
+		<ImageLoad onmatch="exclude">
+			<Signature condition="contains">microsoft</Signature>
+		</ImageLoad>
+
 	<!--SYSMON EVENT ID 8 : REMOTE THREAD CREATED [CreateRemoteThread]-->
 		<!--COMMENT:	Monitor for processes injecting code into other processes. Often used by malware to cloak their actions. Also when Firefox loads Flash.
 		[ https://attack.mitre.org/wiki/Technique/T1055 ] -->
 
 		<!--DATA: UtcTime, SourceProcessGuid, SourceProcessId, SourceImage, TargetProcessId, TargetImage, NewThreadId, StartAddress, StartModule, StartFunction-->
+
 		<CreateRemoteThread onmatch="exclude">
 			<!--COMMENT: Exclude mostly-safe sources and log anything else.-->
 			<SourceImage condition="is">C:\Windows\system32\wbem\WmiPrvSE.exe</SourceImage>
@@ -421,7 +426,6 @@
 			<SourceImage condition="is">C:\Windows\system32\wininit.exe</SourceImage>
 			<SourceImage condition="is">C:\Windows\system32\csrss.exe</SourceImage>
 			<SourceImage condition="is">C:\Windows\system32\services.exe</SourceImage>
-			<SourceImage condition="is">C:\Windows\system32\winlogon.exe</SourceImage>
 			<SourceImage condition="is">C:\Windows\system32\audiodg.exe</SourceImage>
 			<StartModule condition="is">C:\Windows\system32\kernel32.dll</StartModule>
 			<TargetImage condition="end with">Google\Chrome\Application\chrome.exe</TargetImage>
@@ -447,7 +451,18 @@
 
 		<!--DATA: UtcTime, SourceProcessGuid, SourceProcessId, SourceThreadId, SourceImage, TargetProcessGuid, TargetProcessId, TargetImage, GrantedAccess, CallTrace-->
 		<ProcessAccess onmatch="include">
+			<TargetImage condition="is">C:\Windows\system32\lsass.exe</TargetImage>
+			<TargetImage condition="is">C:\Windows\system32\winlogon.exe</TargetImage>
+			<TargetImage condition="is">C:\Windows\system32\explorer.exe</TargetImage>
 		</ProcessAccess>
+
+		<!-- Processes that you wish to exclude -->
+   		<ProcessAccess onmatch="exclude">
+			<SourceImage condition="contains">procexp64.exe</SourceImage>
+			<SourceImage condition="is">C:\WINDOWS\System32\Taskmgr.exe</SourceImage>
+			<SourceImage condition="is">C:\WINDOWS\System32\VBoxService.exe</SourceImage>
+      		<SourceImage condition="is">C:\Program Files (x86)\VMware\VMware Workstation\vmware-authd.exe</SourceImage>
+   		</ProcessAccess>
 
 	<!--SYSMON EVENT ID 11 : FILE CREATED [FileCreate]-->
 		<!--EVENT 11: "File created"-->
